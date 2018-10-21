@@ -1,5 +1,8 @@
 package edu.temple.cis.c3238.banksim;
 
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * @author Cay Horstmann
  * @author Modified by Paul Wolfgang
@@ -10,7 +13,11 @@ public class Account {
     private volatile int balance;
     private final int id;
     private final Bank myBank;
-
+    //ReentrantLock aLock;
+    //Condition fundsAvailableCondition;
+    //Condition valueAvailableCondition;
+    //private ReentrantLock aLock; //each account should have its own lock?
+    
     public Account(Bank myBank, int id, int initialBalance) {
         this.myBank = myBank;
         this.id = id;
@@ -21,10 +28,10 @@ public class Account {
         return balance;
     }
 
-    public boolean withdraw(int amount) {
+    public boolean withdraw(int amount) {   
         if (amount <= balance) {
             int currentBalance = balance;
-//            Thread.yield(); // Try to force collision
+            //Thread.yield(); // Try to force collision
             int newBalance = currentBalance - amount;
             balance = newBalance;
             return true;
@@ -32,8 +39,10 @@ public class Account {
             return false;
         }
     }
+ 
 
     public void deposit(int amount) {
+  
         int currentBalance = balance;
 //        Thread.yield();   // Try to force collision
         int newBalance = currentBalance + amount;
@@ -44,4 +53,20 @@ public class Account {
     public String toString() {
         return String.format("Account[%d] balance %d", id, balance);
     }
+
+    
+ /*   void waitForAvailableFunds(int amount) throws InterruptedException {
+        //if current balance is less than the amount, wait
+        aLock.lock();
+        try{
+            while(this.balance < amount){
+                try{
+                    fundsAvailableCondition.await();
+                }catch(InterruptedException ex){
+                }
+            }
+        }finally{
+            aLock.unlock();
+        }
+    }*/
 }
