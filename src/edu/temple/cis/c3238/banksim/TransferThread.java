@@ -5,9 +5,12 @@ import java.util.logging.Logger;
 
 /**
  * @author Cay Horstmann
- * @author Modified by Paul Wolfgang
- * @author Modified by Charles Wang
+ * @author Paul Wolfgang
+ * @author Charles Wang
+ * @author Modified by Byron Jenkins
+ * @author Modified by Victor Dang
  */
+
 class TransferThread extends Thread {
 
     private final Bank bank;
@@ -25,11 +28,9 @@ class TransferThread extends Thread {
         for (int i = 0; i < 10000; i++) {
             int toAccount = (int) (bank.size() * Math.random());
             int amount = (int) (maxAmount * Math.random());
-            try {
                 bank.transfer(fromAccount, toAccount, amount);
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
         }
+        //close bank
+        bank.close();
     }
 }

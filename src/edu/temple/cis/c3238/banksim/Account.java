@@ -5,18 +5,16 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Cay Horstmann
- * @author Modified by Paul Wolfgang
- * @author Modified by Charles Wang
+ * @author Paul Wolfgang
+ * @author Charles Wang
+ * @author Modified by Byron Jenkins
+ * @author Modified by Victor Dang
  */
 public class Account {
 
     private volatile int balance;
     private final int id;
     private final Bank myBank;
-    //ReentrantLock aLock;
-    //Condition fundsAvailableCondition;
-    //Condition valueAvailableCondition;
-    //private ReentrantLock aLock; //each account should have its own lock?
     
     public Account(Bank myBank, int id, int initialBalance) {
         this.myBank = myBank;
@@ -28,10 +26,10 @@ public class Account {
         return balance;
     }
 
-    public boolean withdraw(int amount) {   
+    public synchronized boolean withdraw(int amount) {   
         if (amount <= balance) {
             int currentBalance = balance;
-            //Thread.yield(); // Try to force collision
+            Thread.yield(); // Try to force collision
             int newBalance = currentBalance - amount;
             balance = newBalance;
             return true;
@@ -41,12 +39,13 @@ public class Account {
     }
  
 
-    public void deposit(int amount) {
+    public synchronized void deposit(int amount) {
   
         int currentBalance = balance;
-//        Thread.yield();   // Try to force collision
+        Thread.yield();   // Try to force collision
         int newBalance = currentBalance + amount;
         balance = newBalance;
+        notifyAll(); // wakes up all sleeping threads that are waiting on object's monitor
     }
     
     @Override
@@ -55,18 +54,14 @@ public class Account {
     }
 
     
- /*   void waitForAvailableFunds(int amount) throws InterruptedException {
-        //if current balance is less than the amount, wait
-        aLock.lock();
-        try{
-            while(this.balance < amount){
-                try{
-                    fundsAvailableCondition.await();
-                }catch(InterruptedException ex){
-                }
+   public synchronized void waitForAvailableFunds(int amount){
+        //if bank is open and current balance is less than the amount, wait
+        while(myBank.isOpen() && this.balance < amount){
+            try{
+                wait(); // causes the thread to wait for another thread to call notify() or notifyAll()
+                //fundsAvailableCondition.await();
+            }catch(InterruptedException ex){
             }
-        }finally{
-            aLock.unlock();
         }
-    }*/
+    }
 }
