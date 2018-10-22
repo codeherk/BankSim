@@ -55,8 +55,8 @@ public class Account {
 
     
    public synchronized void waitForAvailableFunds(int amount){
-        //if bank is open and current balance is less than the amount, wait
-        while(myBank.isOpen() && this.balance < amount){
+        //if bank is open and current balance is less than or equal to the amount, wait
+        while(myBank.isOpen() && balance <= amount){
             try{
                 wait(); // causes the thread to wait for another thread to call notify() or notifyAll()
                 //fundsAvailableCondition.await();
