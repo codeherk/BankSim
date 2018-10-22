@@ -26,7 +26,7 @@ public class Account {
         return balance;
     }
 
-    public synchronized boolean withdraw(int amount) {   
+     public synchronized boolean withdraw(int amount) {   
         if (amount <= balance) {
             int currentBalance = balance;
             Thread.yield(); // Try to force collision

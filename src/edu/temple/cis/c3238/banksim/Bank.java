@@ -19,7 +19,7 @@ public class Bank {
     private final int initialBalance;
     private final int numAccounts;
     private boolean open; 
-    private ReentrantLock aLock;
+    ReentrantLock aLock;
     //private Condition fundsAvailable;
     
     public Bank(int numAccounts, int initialBalance) {
@@ -54,7 +54,7 @@ public class Bank {
             accounts[from].withdraw(amount);
             accounts[to].deposit(amount);
             
-            if (shouldTest()) test();
+            //if (shouldTest()) test();
             
         }finally{
             aLock.unlock();
